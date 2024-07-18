@@ -5,6 +5,7 @@ import { SplashScreen, Stack } from "expo-router";
 
 import GlobalProvider from '../context/GlobalProvider'
 import { VideoProvider } from "../context/VideoContext";
+import { CreatorProvider } from "../context/CreatorContext";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -41,16 +42,19 @@ const RootLayout = () => {
   return (
     <GlobalProvider>
       <VideoProvider>
+        <CreatorProvider>
 
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
-          <Stack.Screen name="settings/settingsPage" options={{ headerShown: false }} />
-          <Stack.Screen name="details/VideoDetails" options={{ headerShown: false }} />
-        </Stack>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
+            <Stack.Screen name="settings/settingsPage" options={{ headerShown: false }} />
+            <Stack.Screen name="details/VideoDetails" options={{ headerShown: false }} />
+            <Stack.Screen name="details/profileDetails" options={{ headerShown: false }} />
+          </Stack>
 
+        </CreatorProvider>
       </VideoProvider>
     </GlobalProvider>
   );

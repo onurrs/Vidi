@@ -6,6 +6,8 @@ import { icons } from "../constants";
 import { router } from "expo-router";
 
 import { useVideoContext } from "../context/VideoContext";
+import { useCreatorContext } from '../context/CreatorContext';
+import { getCurrentUser, getProfileDetails } from "../lib/appwrite";
 
 
 const VideoCard = ({ videoId, title, creator, avatar, thumbnail, video }) => {
@@ -13,17 +15,30 @@ const VideoCard = ({ videoId, title, creator, avatar, thumbnail, video }) => {
   const [play, setPlay] = useState(false);
 
   const { setActiveVideo } = useVideoContext();
-
+  const { setActiveCreator } = useCreatorContext();
 
   const goDetails = async () => {
     setActiveVideo(videoId);
     router.push('/details/VideoDetails');
   }
 
+  const visitProfile = async () => {
+
+    const userObject = await getProfileDetails(creator);
+
+
+    if (userObject.id === (await getCurrentUser()).$id) {
+      router.push('profile')
+    } else {
+      setActiveCreator(userObject);
+      router.push('details/profileDetails')
+    }
+  }
+
   return (
     <View className="flex-col items-center px-4 mb-14">
       <View className="flex-row gap-3 items-start">
-        <View className="justify-center items-center flex-row flex-1">
+        <TouchableOpacity className="justify-center items-center flex-row flex-1" onPress={visitProfile}>
           <View className="w-[46px] h-[46px] rounded-lg border border-secondary justify-center items-center p-0.5">
             <Image source={{ uri: avatar }} className="w-full h-full rounded-lg" resizeMode="cover" />
           </View>
@@ -36,7 +51,7 @@ const VideoCard = ({ videoId, title, creator, avatar, thumbnail, video }) => {
               @{creator}
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
 
         <TouchableOpacity onPress={goDetails}>
           <View className="pt-2">

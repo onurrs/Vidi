@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import FormField from '../../components/FormField'
 import { ResizeMode, Video } from 'expo-av'
 import { icons } from '../../constants'
-import  CustomButton  from '../../components/CustomButton'
+import CustomButton from '../../components/CustomButton'
 import * as DocumentPicker from 'expo-document-picker'
 import { router } from 'expo-router'
 import { createVideoPost } from '../../lib/appwrite'
@@ -17,7 +17,7 @@ const Create = () => {
 
   const [uploading, setUploading] = useState(false)
 
-  const [form,setForm] = useState({
+  const [form, setForm] = useState({
     title: '',
     video: null,
     thumbnail: null,
@@ -50,11 +50,19 @@ const Create = () => {
   };
 
   const submit = async () => {
-    if(!form.description || !form.thumbnail || !form.title || !form.video){
-      return Alert.alert('Hata','Lütfen tüm alanları doldurun.')
+
+    if (!form.thumbnail || !form.title || !form.video) {
+      return Alert.alert('Hata', 'Lütfen tüm alanları doldurun.')
     }
 
     setUploading(true)
+
+    if (!form.thumbnail && form.video) {
+      setForm({
+        ...form,
+        thumbnail: form.video   //Düzenlenecek
+      })
+    }
 
     try {
       await createVideoPost({
@@ -65,7 +73,7 @@ const Create = () => {
       router.push('/home')
     } catch (error) {
       Alert.alert('Hata', error.message)
-    }finally{
+    } finally {
       setForm({
         title: '',
         video: null,
@@ -77,22 +85,45 @@ const Create = () => {
     }
   }
 
+  const notUploadedVideo = async () => {
+    Alert.alert("Hata", "Herhangi bir video seçilmedi.");
+  }
+
+  const notUploadedThumbnail = async () => {
+    Alert.alert("Hata", "Herhangi bir kapak resmi seçilmedi.");
+  }
+
+  const clearUploadedVideo = async () => {
+    setForm({
+      ...form,
+      video: null
+    });
+  }
+
+  const clearUploadedThumbnail = async () => {
+    setForm({
+      ...form,
+      thumbnail: null
+    });
+  }
+
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView className="px-4 my-6">
         <Text className="text-2xl text-white font-psemibold">
           Video Yükle
         </Text>
-        
+
         <FormField
           title="Video Başlığı"
           value={form.title}
           placeholder={"Videona havalı bir başlık koy..."}
-          handleChangeText={(e) => setForm({...form, title: e})}
+          handleChangeText={(e) => setForm({ ...form, title: e })}
           otherStyles={"mt-10"}
+          otherStyles2={"border border-purple-700 rounded-lg"}
         />
 
-        <View className="mt-7 space-y-2">
+        <View className="mt-7 space-y-2 p-3 border-purple-900 rounded-lg border-2">
           <Text className="text-base text-gray-100 font-pmedium">
             Video Yükle
           </Text>
@@ -116,9 +147,22 @@ const Create = () => {
               </View>
             )}
           </TouchableOpacity>
+          {form.video ? (
+            <CustomButton
+              title={"Videoyu kaldır"}
+              containerStyles={"mt-7"}
+              handlePress={clearUploadedVideo}
+            />
+          ) :
+            <CustomButton
+              title={"Videoyu kaldır"}
+              containerStyles={"mt-7 bg-gray-500"}
+              handlePress={notUploadedVideo}
+            />
+          }
         </View>
 
-        <View className="mt-7 space-y-2">
+        <View className="mt-7 space-y-2 border-2 p-3 border-purple-900 rounded-lg">
           <Text className="text-base text-gray-100 font-pmedium">
             Kapak Resmi
           </Text>
@@ -144,12 +188,25 @@ const Create = () => {
               </View>
             )}
           </TouchableOpacity>
+          {form.thumbnail ? (
+            <CustomButton
+              title={"Kapak resmini kaldır"}
+              containerStyles={"mt-7"}
+              handlePress={clearUploadedThumbnail}
+            />
+          ) :
+            <CustomButton
+              title={"Kapak resmini kaldır"}
+              containerStyles={"mt-7 bg-gray-500"}
+              handlePress={notUploadedThumbnail}
+            />
+          }
         </View>
 
         <FormField
           title="Video Açıklaması"
           value={form.description}
-          handleChangeText={(e) => setForm({...form, description: e})}
+          handleChangeText={(e) => setForm({ ...form, description: e })}
           otherStyles={"mt-7"}
         />
 

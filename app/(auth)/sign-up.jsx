@@ -26,9 +26,11 @@ const SignUp = () => {
     try {
       const result = await createUser(form.email, form.password, form.username)
 
-      router.replace('/home')
+      Alert.alert('Başarılı','Hesabınız başarılı bir şekilde oluşturulmuştur. Lütfen giriş yapınız.')
+      router.replace('/sign-in')
+      //router.replace('/home')
     } catch (error) {
-      Alert.alert('Error', error.message)
+      Alert.alert('Hata', error.message)
     } finally {
       setIsSubmitting(false)
     }
